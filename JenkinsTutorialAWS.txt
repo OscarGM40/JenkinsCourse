@@ -227,3 +227,8 @@ COPY . /var/www/html/
 WORKDIR /var/www/html
 
 El dockerfile tiene un PHP y todos los paquetes necesarios para desplegarse y poderse conectar con mysql y postgresql
+El docker lo va a correr el master,el propio Jenkins
+Fijate que ha creado la variable nombre_final para despues remover el contenedor
+
+IMPORTANTE: para no tener que meter el repositorio,ramas,rutas,.. de nuevo puedo copiar un proyecto ya existente.Dado que el repo y las credentials y la branch son iguales me ahorro tiempo
+IMPORTANTE:Jenkins siempre se lanza a ejecutar la tarea,pero si necesitará parámetros de entrada va a fallar.Veré que tras el fallo ha sacado una nueva opción Build With Parameters
