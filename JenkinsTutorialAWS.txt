@@ -1,0 +1,214 @@
+					CURSO 2021 JENKINS INTRODUCCION A LA INTEGRACCIÓN CONTINUA(AWS)
+
+Source: https://www.youtube.com/watch?v=DpoKXjuWKwE&list=PLdOotbFwzDIiU4Hs8ySZr-phOeGMBY_3D
+
+Los objetivos de este curso son:
+1º: Conocer en profundidasd la herramienta Jenkins 
+2º: Implementar pipelines
+3º: Usar Jenkins para potenciar la cultura DevOps
+
+			VIDEO 01 CONCEPTOS BÁSICOS
+
+* Se recomienda saber Linux,Docker y Git y tener un Linux y una cuenta en AWS.
+¿Què es Jenkins? Jenkins es una herramienta de automatización de procesos y facilita el aspecto de integración continua-entrega continua (CI-CD).
+Jenkins puede ejecutar proyectos o secuencias de comandos,scripts en varios lenguajes,programas por lotes de Windows,tiene un sistema de control de usuarios y de administración de secretos.Puede conectarse a equipos remotos o locales para ser usados y ejecutar comandos dentro de ellos.En la actualidad es una pieza esencial en el despliegue de aplicaciones.
+
+¿Porqué tiene éxito Jenkins? 
+
+1º: Jenkins es extensible,lo que quiere decir que dispone de la capacidad de extender su funcionalidad mediante plugins.Existen multitud de plugins que permiten cambiar el comportamiento de Jenkins o añadirle funcionalidades.
+
+2º: Es portátil: puedes migrar ciertos archivos internos de Jenkins y asi saber configuraciones echas de antemano  y no tener que construirlas nuevamente(copia y pega).También puedo instalar Jenkins en muchos sistemas operativos.
+
+3º: Es famoso: hay innumerable documentación y foros sobre Jenkins,lo que me permitirá resolver problemas o dudas que me surgan en el día a día fácilmente
+
+4º: Escalamiento horizontal y vertical: Jenkins está adaptado para soportar cargas de trabajo variables y como todo sistema puede tomar todos los recursos del hardware donde está instalado(escalamiento vertical) y también facilita la adaptación de más hardware para resolver tareas permitiendo un escalamiento horizontal
+
+Plugins: Jenkins usa plugins para extender su funcionalidad.Los plugins son aplicaciones o software que contiene un grupo de funciones o caracteristicas las cuales ayudan a mejorar o dar una funcionalidad a otro software.
+
+Jenkins es multi-nube: es otra de las ventajas: para Jenkins es muy fácil adaptarse a los recursos que proveen las plataformas Cloud más importantes(AWS-Microsoft - Azure - GoogleCloud - OracleCloud)
+
+Jenkins puede adaptarse a la instancia donde está hospedado.Si le aumento los recursos podrá resolver más tareas paralelamente o tareas que consuman muchos recursos en menor tiempo(de nuevo esto es el escalamiento vertical)
+
+Jenkins puede delegar la resolución de tareas a otras instancias(docker,ubuntu,windows,mac,git,...).Esto quiere decir que Jenkins puede conectarse a instancias remotas y resolver tareas como si lo hiciera localmente.En cierta forma se transforma en un orquestador o master que dispone de Pcs remotos a conveniencia.
+Estas instancias remotas se las llama slaves/esclavos.
+
+Los jobs son trabajos o tareas que Jenkins ejecuta.En resumen son secuencias de acciones que resuelven algo.Son muy adaptables y en ellas se pueden configurar multitud de secuencias y validaciones que permiten resolver una tarea en particular.
+Tienen un sistema de logs y de debug que permiten depurar y encontrar errores.Los Jobs son muy importantes.
+
+Jenkins tiene la capacidad de delegar tareas a otro hardware,a otros pcs.Imaginemos 4 instancias o máquinas,una con Java,otra con Docker y dos Node.js.También tenemos estas ordenes(son un ejemplo):
+1 build java
+2 build docker
+3 notificaciones
+4 build node.js
+5 build node.js 
+La tarea 1 solo la puede resolver el slave 1(el slave java).Jenkins solicitó una compilación de Java,asi que se conectará al esclavo 1.Para la tarea dos se conectará a la máquina dos,etc.
+Hay algunas tareas que puede resolver el propio master,como por ejemplo las notificaciones.
+IMPORTANTE: dado que tenemos dos tareas Node y dos máquinas/slaves Node podremos ejecutar estas tareas en paralelo
+
+						CICLO DE VIDA SOFTWARE SEGUN DEVOPS
+
+El ciclo de vida de un software son una serie de pasos que permiten desplegar un código en un ambiente.Puede ser tan sencillo como construir(build) y desplegar(deploy)  o hasta tan complejo como esta cadena :
+code - unitTesting - build - integrationTesting - release - deploy - Pentesting Stress Performance - Operate - Monitor
+
+Jenkins tiene la capacidad de automatizar varias fases de esta cadena/ciclo de vida.Por ejemplo,puede automatizar la construcción(build),el release y el deploy y con la ayuda de otras herramientas puede encargarse de las pruebas unitarias y de integración y del Pentesting,las pruebas de Stress y Performance.
+
+Por último Jenkins tiene el archivo .JenkinsFile que va a ser el pilar de este curso.Es aqui donde escribiré la secuencia de códigos.Veremos como comunicarnos con instancias de AWS,ejecutar comandos de Linux,interactuar con KubernetesTesting - release - deploy - Pentesting Stress Performance - Operate - Monitor
+
+Jenkins tiene la capacidad de automatizar varias fases de esta cadena/ciclo de vida.Por ejemplo,puede automatizar la construcción(build),el release y el deploy y con la ayuda de otras herramientas puede encargarse de las pruebas unitarias y de integración y del Pentesting,las pruebas de Stress y Performance.
+
+Por último Jenkins tiene el archivo .JenkinsFile que va a ser el pilar de este curso.Es aqui donde escribiré la secuencia de códigos.Veremos como comunicarnos con instancias de AWS,ejecutar comandos de Linux,interactuar con KubernetesTesting - release - deploy - Pentesting Stress Performance - Operate - Monitor
+
+Jenkins tiene la capacidad de automatizar varias fases de esta cadena/ciclo de vida.Por ejemplo,puede automatizar la construcción(build),el release y el deploy y con la ayuda de otras herramientas puede encargarse de las pruebas unitarias y de integración y del Pentesting,las pruebas de Stress y Performance.
+
+Por último Jenkins tiene el archivo .JenkinsFile que va a ser el pilar de este curso.Es aqui donde escribiré la secuencia de códigos.Veremos como comunicarnos con instancias de AWS,ejecutar comandos de Linux,interactuar con Kubernetes,...
+
+			VIDEO 02 OVERVIEW DE LA PLATAFORMA
+
+Veremos un pequeño overview,pero sin profundizar ya que las opciones que tiene se vuelven relevantes según el proyecto.Jenkins es muy dinámico.También los plugins que instale me modificarán la pantalla de opciones.Asi que no tendría sentido profundizar
+El menu lateral izquierdo tiene tres partes.
+
+La primera son las opciones como crear tarea,ver usuarios,tareas y administrar Jenkins,esta opción es muy potente,aqui están todas las opciones del sistema(configurar variables globales y locales,administrar plugins,administrar nodos,gestión de usuarios.)Es una opción clave
+
+Más abajo estarán los trabajos en cola
+
+Y más abajo aún aparecen todas las instancias esclava incluido también el maestro.Es una parte importante pues veré todas las instancias que tengo disponibles para resolver una tarea.
+
+						INSTALAR JENKINS COMO UNIT Y CON DOCKER
+
+* NOTA: para instalarlo si bien puedo usar Docker he decidido instalarlo en el sistema como una Unit que dejaré en enable(no estoy seguro aún).
+Pide OpenJDK11 Java( instalarlo con:
+>  sudo apt install default-jre default-jdk
+y cambiar de version con 
+>sudo update-alternatives --config java
+Despues leer la password random que se le dió al admin y puedo crear un usuario.
+Por defecto Jenkins viene con un servidor web Winstone en el puerto 8080,sin embargo es buena idea securizar Jenkins con SSL para proteger las passwords y los datos que se transmitirán a través de la interfaz web(van en texto plano)
+
+Para instalarlo con Docker el autor deja este video: https://www.youtube.com/watch?v=qVShk0UGGQU
+El repo esta aquí: https://github.com/culturadevops/jenkins/tree/master/instalaciones/docker
+Fijate que la imagen es jenkins/jenkins:lts y que ha dejado varios,algunos con plugins extras.Levantar el docker-compose y coger el token/pass del admin.Cuando entre por primera vez a la interfaz web darle en instalar(instala los plugins básicos como Git,etc...)Este paso se hace siempre..
+
+En la pantalla administrar Jenkins tengo varias  opciones muy importantes:
+Configurar el sistema: puedo crear variables globales a todo proyecto o locales
+Administrar plugins: aqui extenderé la funcionalidad de Jenkins agregandole software
+Gestion de usuarios: Si bien puedo crear varios usuarios,Jenkins va dejando registros de quien ejecuta cualquier accion
+Administración de Nodos: aqui veré las instancias o máquinas conectadas(fijate que se me ha conectado a la partición pequeña).
+Aqui agregaremos nodos,un poco más adelante(supongo que pueden ser remotos también).
+
+			VIDEO 03 COMO CREAR UN JOB DE JENKINS
+
+Haremos un pequeño overview sobre como crear tareas o jobs.Pero,primero,¿Qué es un job?:
+- Las tareas o jobs son secuencias de acciones o actividades que Jenkins realiza para resolver algo(es su principal objetivo).Jenkins fue pensado para orquestar procesos de desarrollo pero sus caracteristicas le permiten hacer muchas cosas más:
+
+1- Permite ejecuciones de procesos secuenciales(simplemente va a realizar estas acciones una por una)
+2- Estas acciones pueden ser mover,copiar,subir, descargar(bajar) archivos de fuentes remotas...
+3- Permite ejecución de sus trabajos en horas determinadas
+4- También permite la ejecución de sus trabajos en base a eventos( o ambas,eventos y horas determinadas)
+5- También permite ejecutar las tareas dentro de otras máquinas(de una o de varias)
+6- Permite realizar backups de aplicaciones y de bases de datos
+7- Permite interactuar con herramientas de test para realizar smoking tests.
+8- Permite ejecutar test sobre una rama de código
+9- Permite interactuar con sistemas que tengan CLI
+10- Permite compilar y desplegar código en ambientes(de producción o desarrollo)
+
+Un job puede ser ejecutado por eventos,por un cronjob, por un HttpRequest(recuerda que XmlHttpRequest es lo que usa Ajax,y permitia enviar fragmentos de la respuesta en vez de todo el Html como tenian que hacer al principio)
+
+Para crear un job o tarea lo haré desde 'Nueva Tarea'.A su vez la zona de Trabajos en la cola mostrará todas las tareas que están en cola para resolverse.Si Jenkins no pudiera resolver una tarea la encolará allí hasta resolverse,asi que es una zona importante.
+Se le puede definir a Jenkins cuantas tareas puede resolver paralelamente.
+La zona más abajo (el ejecutor de construcciones) mostrará tanto los Nodos como el Master(él mismo).
+
+					TIPOS DE TAREAS QUE PUEDO CREAR
+
+* NOTA: puedo ver todas estas opciones al darle en Nueva Tarea
+1ª: Crear un proyecto estilo libre: es un proyecto de propósito general,podré usar node,maven,git,script,.. y combinar todo.
+2ª: Crear un pipeline(paiplain): este tipo de proyecto realiza actividades de manera compleja que no podrían ser resueltas por un proyecto estilo libre( como encadenar acciones)
+3ª: Crear un proyecto de configuración múltiple(o proyecto de matriz): permite ejecutar el mismo trabajo sobre muchas configuraciones diferentes.Puede ser útil para probar un trabajo en muchos entornos diferentes(como diferentes bases de datos o Sistemas Operativos)
+4ª: Crear un Folder: son como carpetas donde puedo agrupar cosas.Es como un simple namespace(espacio de nombre).
+5ª: Crear un proyecto GitHub: permite escanear una GithHub organization o una User Account .Cada proyecto deberá tener un JenkinsFile para que Jenkins lo detecte
+6ª: Crear un Multibranch Pipeline: permite crear proyectos de pipeline(tipo 2) pero con la ventaja de detectar las branch que se van creando en el repositorio y los agrupa de una forma más intuitiva.Permite implementar diferentes JenkinsFile para diferentes ramas.
+
+Cada tipo de Job requerirá de una configuración específica.Los plugins también la cambian,por ejemplo agregar un plugin para securizar esa tarea cambiará su configuración.Por ejemplo,me podria pedir parámetros de entrada el hecho de instalar este plugin,o me pedirá descargar archivos adicionales,etc...
+
+		CODIGO EN LA PLATAFORMA 				CODIGO EN JENKINSFILE 
+		
+			VENTAJAS								VENTAJAS
+		  Rápido de probar							Rápido de configurar
+          Rápido de modificar						Se pueden usar controladores de versiones
+													Es reusable
+
+		DESVENTAJAS									DESVENTAJAS
+		Se puede perder el código					Es más lento de modificar
+       Se puede perder la configuración				
+
+				VIDEO 04
+
+Veremos como crear un job "hola mundo",como crear un job con git y otro usando git+docker.
+
+JOB SIMPLE "Hola mundo" desde CLI
+
+Primero doy en nueva tarea y le doy un nombre.Con un proyecto de tipo libre nos valdrá.Tras seleccionar el tipo me llevará a la pantalla General donde puedo ver muchísimas opciones.Veré dos desplegables abajo del todo,Ejecutar y Acciones para Ejecutar despues(entiendo que despues de la tarea)
+En este caso en Ejecutar tengo dos opciones,Ejecutar un comando de Windows o Ejecutar linea de comandos(shell).La primera es una CLI de Windows,la segunda es una CLI de Linux,y es la que cogeré.
+Despues eligo construir ahora y me saldrá en la lista de jobs más abajo.Puedo hacer click para ir a él.Alli tengo Console Output para ver la salida por consola de cualquier job.Veré el echo "hola mundo" además de quien lo lanzó,si tuvo éxito,etc..
+
+Si ahora agrego otro comando no exitoso veré y lo reconstruyo de nuevo veré que la tarea falló,ya tiene incluso un icono para ello.Puedo ir a la consola a ver que sucedió.Lógicamente sh "hola" no puede abrir un string
+
+JOB DESDE GIT
+
+Para crear un job desde Git creo una nueva tarea de tipo pipeline.Despues en vez de quedarme en General voy a Advanced Options y cambio Pipeline Script por Pipeline Script from SCM.Mas abajo selecciono ese SCM eligiendo GIT.
+Pongo su repo de momento https://github.com/culturadevops/jenkins.git
+IMPORTANTE: hay que poner unas credenciales globales tipo username + password(credentials/system/globalcredentials) y alli pongo cualquier user + un token de github como password.Aparte no tenia bien el scriptPath,era jobs/Jenkinsfile (carpeta/archivo, faltaba la carpeta)
+
+IMPORTANTE: fijate que he accedido al archivo en la rama master/ del proyecto jenkins en la ruta /jobs/Jenkinsfile ,por eso el scripPath ha sido jobs/Jenkinsfile.
+
+NOTA:para acceder a un repo privado tendré que usar algo como: https://<user>:<access token>@github.com/dupinder/NgnixDockerizedDevEnv.git.Probar esta tarde.
+
+El archivo en el directorio jobs llamado Jenkinsfile tenia este código:
+
+import groovy.json.JsonSlurperClassic
+
+def jsonParse(def json) {
+    new groovy.json.JsonSlurperClassic().parseText(json)
+}
+pipeline {
+  agent { label 'master' }
+  environment {
+    appName = "variable" 
+  }
+  stages {
+
+ stage("paso 1"){
+     
+      steps {
+          script {			
+           sh "echo 'hola mundo'"
+        }
+      }
+    }
+  }
+  post {
+      always {          
+          deleteDir()
+           sh "echo 'fase always'"
+      }
+      success {
+            sh "echo 'fase success'"
+        }
+
+      failure {
+            sh "echo 'fase failure'"
+      }
+      
+  }}
+La propiedad agent especifica a Jenkins donde debe ejecutarse.
+La propiedad environment especifica las variables de entorno que predefiniré para que Jenkins las pueda usar.
+Despues viene el apartado 'stages' que son fases.Estas fases están divididas en varias 'stage'.
+Dentro de una stage puedo 
+Cada fase se va a ir resolviendo hasta fallar o hasta terminar la tarea.Si falla el pipeline deja de ejecuta la stage donde falló y se va al apartado 'post'.Este apartado post siempre se va a ejecutar al finalizar el pipeline,pero puedo ver que ejecutará sus subapartados dependiendo del estado de la tarea.
+Obviamente 'always' se ejecutará independientemente de que falle o tenga éxito la tarea.'success' se ejecutará solo si tuvo éxito y 'failure' si falló.
+
+Puedo observar que el pipeline se ejecutó exitosamente en el console output de Jenkins
++ echo fase always
+fase always
+[Pipeline] sh
++ echo fase success
+fase success
+Es realmente sencillo ejecutar un file de Git en Jenkins  
