@@ -143,7 +143,7 @@ Cada tipo de Job requerirá de una configuración específica.Los plugins tambi�
 
 Veremos como crear un job "hola mundo",como crear un job con git y otro usando git+docker.
 
-JOB SIMPLE "Hola mundo" desde CLI
+1 - JOB SIMPLE "Hola mundo" desde CLI
 
 Primero doy en nueva tarea y le doy un nombre.Con un proyecto de tipo libre nos valdrá.Tras seleccionar el tipo me llevará a la pantalla General donde puedo ver muchísimas opciones.Veré dos desplegables abajo del todo,Ejecutar y Acciones para Ejecutar despues(entiendo que despues de la tarea)
 En este caso en Ejecutar tengo dos opciones,Ejecutar un comando de Windows o Ejecutar linea de comandos(shell).La primera es una CLI de Windows,la segunda es una CLI de Linux,y es la que cogeré.
@@ -151,7 +151,7 @@ Despues eligo construir ahora y me saldrá en la lista de jobs más abajo.Puedo 
 
 Si ahora agrego otro comando no exitoso veré y lo reconstruyo de nuevo veré que la tarea falló,ya tiene incluso un icono para ello.Puedo ir a la consola a ver que sucedió.Lógicamente sh "hola" no puede abrir un string
 
-JOB DESDE GIT
+2- JOB DESDE GIT
 
 Para crear un job desde Git creo una nueva tarea de tipo pipeline.Despues en vez de quedarme en General voy a Advanced Options y cambio Pipeline Script por Pipeline Script from SCM.Mas abajo selecciono ese SCM eligiendo GIT.
 Pongo su repo de momento https://github.com/culturadevops/jenkins.git
@@ -212,3 +212,18 @@ fase always
 + echo fase success
 fase success
 Es realmente sencillo ejecutar un file de Git en Jenkins  
+
+3- JOB DESDE GIT CON DOCKER
+Vamos a desplegar un index.html con PHP y un Dockerfile aparte del Jenkinsfile
+*Veamos el Dockerfile
+FROM php:7.1.17-apache
+LABEL maintainer="Jaivic"
+
+RUN a2enmod rewrite
+
+RUN apt-get update .... <- ver el file
+
+COPY . /var/www/html/
+WORKDIR /var/www/html
+
+El dockerfile tiene un PHP y todos los paquetes necesarios para desplegarse y poderse conectar con mysql y postgresql
