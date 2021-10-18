@@ -232,3 +232,144 @@ Fijate que ha creado la variable nombre_final para despues remover el contenedor
 
 IMPORTANTE: para no tener que meter el repositorio,ramas,rutas,.. de nuevo puedo copiar un proyecto ya existente.Dado que el repo y las credentials y la branch son iguales me ahorro tiempo
 IMPORTANTE:Jenkins siempre se lanza a ejecutar la tarea,pero si necesitará parámetros de entrada va a fallar.Veré que tras el fallo ha sacado una nueva opción Build With Parameters
+
+IMPORTANTE:jenkins no va a tener permisos por defecto para ejecutar Docker,hay que meterlo al grupo:
+sudo usermod -aG docker jenkins
+Para ver los users tengo que leer el file /etc/passwd o /etc/shadow ,no hay comando per sé.
+Y para ver sus grupos groups <username>
+>groups jenkins <- veré en qué grupos está jenkins(meterlo al docker)
+
+Fijate que me tardó mucho en compilar,pero al final lo hizo.
+
+			VIDEO 05 CREAR UN USUARIO EN JENKINS
+
+Jenkins por defecto va a otorgar full acceso a los usuarios autenticados(puedo cambiar esto en global Security).Esto para una instancia como la que yo tengo no es importante pero en una empresa habrá varios grupos con diferentes trabajos y lo que se suele hacer es configurar ambientes mediante plugins para restringir o limitar accesos segun sea un desarrollador o un devops,etc
+
+			VIDEO 06 CAMBIAR PERMISOS DE USUARIO
+
+Puedo cambiar permisos segun tipo de usuario.Es como hacer grupos.Para ello voy a configuración de la seguridad y muy cerca del checkbox anterior para cambiar que Jenkins dé full permisos a cualquier usuario autenticado veré la opción 'estrategia de seguridad para proyecto'.
+Alli puedo añadir usuarios o crear grupos y cambiarle los permisos con los checkbox
+Despues por cada proyecto puedo habilitar la seguridad.
+
+        VIDEO 07 ROLES DE JENKINS
+
+El objetivo de este video es crear un rol y asociar un usuario a ese rol.Para ello necesitamos el plugin 'role-based authorizaton strategy y despues crear un rol y agregarle un usuario a ese rol.
+Si no lo tengo ya lo busco y lo instalo en administrar plugins.
+Ahora hay que ir a configuración global de la seguridad y activar el checkbox Role-based Strategy y guardar los cambios.
+Aparecerá una nueva opcion Manage and Assign Roles(el icono es un candado)
+Alli puedo crear un Rol en Manage Role y asignarle un usuario ya existente.
+
+        VIDEO 08 DAR PERMISOS POR PATRONES
+
+Imaginemos que hay jobs echos para un ambiente deproducción y otros jobs para otro ambiente(en este ejemplo será 'qa' o colaboradores).
+El apartado que nos permite generar patrones de permisos está en Manage Roles también,pero en la segunda sección,en Item Roles 
+
+El patron es una regexp,asi que imaginando que todos los jobs que use mi empresa en producción van a empezar por por ejemplo prod-job(ejemplo: prod-job-node01) puedo dar este patrón como argumento en esta sección Item Roles:
+
+prod-job.* <- esto como pattern y hay que darle un nombre al patron(por ejemplo jobs de produccion)
+Una vez creado le debo dar permisos(en este caso sólo le dimos en tarea los de build y read)
+Puedo ver qué proyectos hacen match clickando en la expresión regular.
+En un ambiente laboral estas opciones son muy importantes y ser meticuloso redundará en un mayor beneficio para el que tenga asignada esta tarea.
+
+      VIDEO 09 ADMINISTRAR CREDENCIALES
+
+Jenkins permite guardar credenciales(pares de claves-valor).La sección es manage credentials y una vez alli tengo que clickar en cada usuario(buscar hasta llegar a 'add credentials')
+Alli puedo ver que puedo guardar un usuario ssh con su password para acceder por ssh o un repo de github,etc...
+También puedo crear usuarios con su password para Gestores de BBDD.
+
+De igual manera que puedo crear credenciales también las puedo actualizar con el icono de update y borrar.
+Para usarlas veré la opción para ello en advanced options al crear un pipeline
+
+Dado que Jenkins puede trabajar con numerosas credenciales está esta opción de manage credentials en su core,pero también hay plugins para ello
+
+      VIDEO 10 VARIABLES DE ENTORNO
+
+Jenkins tiene una lista de variables de entorno predefinidas que puedo usar dentro de los jobs para ver lo que está pasando.
+También me permite crear mis propias variables que podré usar dentro de un job.
+Para ver esto creo un nuevo proyecto de estilo libre y ejecutar linea de comandos de linux.Alli ya veré un link a las variables prebuilt de Jenkins.
+
+Puedo ver la salida de cualquiera creando un proyecto de console de Unix con el contenido:
+echo ${VARIABLE} <- con la variable entre llaves
+
+* Hay variables que no van a devolver datos si no las uso en el contexto en el que deben estar(por ejemplo BRANCH_NAME fuera de un proyecto GIT no es útil)
+
+echo "numero de build: " ${BUILD_NUMBER}
+echo "construido por: " ${NODE_NAME}
+echo "nombre del job: " ${JOB_NAME}
+echo "rama de Git: " ${BRANCH_NAME} <- vendrá vacio
+
+Puedo crearme mi propia variable global(no confundir con una credencial).Para ello voy a configurar el sistema y en la seccion propiedades globales veré un botón para añadir variables de entorno.
+Será un par de nombre-valor.Puedo poner cualquier token,id,etc es igual que en un proyecto.
+Siempre que necesite tener data centralizada debería crear variables 
+
+VIDEO 11 CREAR CUENTAS DE USUARIO dentro de AWS EC2
+
+Un BASTION  no es más que un pc o instancia que tiene acceso a un grupo de recursos que son privados(están en una red privada la cual no puede accesarse de manera pública)
+No se puede acceder a estos recursos desde un pc si no es pasando por el BASTION(que es otro pc).
+Estos items pueden ser redes,instancias de otras pcs,bases de datos,puede ser cualquier recurso
+En este punto he decidido hacer su curso de AWS y contratar el free tier.Esta noche ver el curso de Fazt y mañana empezar con el otro curso. 
+
+NOTA: Video agregar instancia como slave a un Jenkins:
+https://www.youtube.com/watch?v=LqqE81UUfJ0
+
+Tras crear un VPS tengo que instalar java(parece que con java8 valdria),git y dokcer:
+sudo apt install openjdk-11-jre-headless
+sudo apt install  docker-compose docker.io
+sudo usermod -aG docker <user> <- añadirle al grupo
+
+Ahora hay que añadir las credenciales del ubuntu(global credentials y sssh with private key)Añado la key como texto.
+Ya puedo ir a nuevo nodo en gestión de nodos y crear un nuevo nodo:
+El nombre de la máquina es la ip pública
+El directorio raiz es /home/ubuntu para una EC2 
+Elegimos no verificación
+Creo una label que tengo que referenciar en el Jenkinsfile
+
+Ahora ya puedo subir a github este Jenkinsfile(cambiar la label por la que le dí):
+
+pipeline {
+    agent { label  "master"} <- cambiar esta label,en este caso por newslave(la que fuere)
+    parameters {
+        string defaultValue: '', description: 'Nombre del usuario a crear', name: 'USUARIO', trim: true
+        string defaultValue: '', description: 'contraseña nueva del usuario a crear', name: 'PASSWORD', trim: true
+        choice choices: ['Lectura','Admin','Desarrollador','APP'], description: '', name: 'TIPOUSUARIO'
+        extendedChoice description: '', multiSelectDelimiter: ',', name: 'DATABASE', quoteValue: false, saveJSONParameterToFile: false, type: 'PT_CHECKBOX', 
+            value: 'database,otroejemplo', visibleItemCount: 10
+    }
+    environment {
+        ADMINPERMISO = "SHOW DATABASES,INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, PROCESS, REFERENCES, INDEX, ALTER, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, REPLICATION SLAVE, REPLICATION CLIENT, CREATE VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER "
+        DESARROLLADOR= "SELECT, INSERT, UPDATE, DELETE, CREATE, DROP"
+        
+        APP= "INSERT, UPDATE, DELETE, EXECUTE"        
+        PERMISO = "SELECT, SHOW VIEW "
+    }
+    stages {
+        stage ('Creando Usuario') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'mysql', passwordVariable: 'PASSWD_DB', usernameVariable: 'USER_DB')]) {
+                        script {
+                        def tipousuario="${TIPOUSUARIO}"
+                        def browsers ="${DATABASE}".split(",")
+                        if (browsers.size()>0){
+                            if (tipousuario=="Admin"){
+                                PERMISO= PERMISO +","+ ADMINPERMISO
+                            }
+                            if (tipousuario=="Desarrollador"){
+                                PERMISO= PERMISO +","+ DESARROLLADOR
+                            }
+                            if (tipousuario=="APP"){
+                                PERMISO= PERMISO +","+ APP
+                            }
+                            withCredentials([string(credentialsId: 'basedatos_link', variable: 'DB_LINK')]) {
+                                for (int i = 0; i < browsers.size(); ++i) {
+                                    sh  "mysql -u${USER_DB} -p${PASSWD_DB} -h ${browsers[i]}.${DB_LINK} -e \"CREATE USER IF NOT EXISTS '$USUARIO'@'%' IDENTIFIED BY '$PASSWORD' ;\""
+                                    sh  "mysql -u${USER_DB} -p${PASSWD_DB} -h ${browsers[i]}.${DB_LINK} -e \"GRANT $PERMISO ON *.* TO '$USUARIO'@'%';\""
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
