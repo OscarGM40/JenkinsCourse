@@ -424,4 +424,5 @@ pipeline {
     }
 }
 
-* Fijate que para ejecutar este pipeline necesitaré activarle los parámetros y el plugin extendedChoice aparte de instalar un mysql en el slave.
+* Fijate que para ejecutar este pipeline necesitaré activarle los parámetros y el plugin extendedChoice aparte de instalar un mysql en el slave,recordar su usuario y pass y crear las dbs pertinentes.
+
