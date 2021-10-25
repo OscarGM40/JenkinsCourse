@@ -309,10 +309,60 @@ No se puede acceder a estos recursos desde un pc si no es pasando por el BASTION
 Estos items pueden ser redes,instancias de otras pcs,bases de datos,puede ser cualquier recurso
 En este punto he decidido hacer su curso de AWS y contratar el free tier.Esta noche ver el curso de Fazt y mañana empezar con el otro curso. 
 
-NOTA: Video agregar instancia como slave a un Jenkins:
-https://www.youtube.com/watch?v=LqqE81UUfJ0
+Para crear una cuenta de usuario dentro de otra máquina simplemente se le pasa un Jenkinsfile con el comando bash sudo useradd ... y lógicamente todo correctamente escrito.Fijate que hay un checkbox en general donde debo especificar que la construcción es con parámetros y ademas debo proporcionar el nombre/key del paramétro al que luego daré su valor por la entrada.
 
-Tras crear un VPS tengo que instalar java(parece que con java8 valdria),git y dokcer:
+pipeline {
+    agent { label 'bastion' } <- recuerda que la label debe coincidir,la mia no se llama asi
+}
+
+            VIDEO 12 CREAR JOBS PARAMETRIZADOS Y LANZARLOS DE MANERA REMOTA
+
+Para lanzar un job de manera remota hay que ir a la configuración de ese job o tarea y buscar el apartado disparador de ejecuciones.Allí veré la opción lanzar ejecuciones remotas que debo habilitar:
+Se nos pide un token de seguridad(el token puede ser cualquier hash que quiera,es como el JWT_SECRET)
+Se nos dice también que la URL quedará asi:
+jenkins_url/job/base/build?token=mitoken asi que con esto en mente mi url quedaría:
+https://localhost:8000/job/base/build?token=tokenquemeheinventado <- no es un token fijo,es lo que yo asigne aqui y que tendrá que coincidir
+Si quiero usar parametros en vez de /build será /buildWithParameters?token=...&key=value.Ejemplo con dos parámetros.            
+https://localhost:8000/job/base/buildWithParameters?token=...&nombre=oscar&apellido=perez 
+* Lógicamente si es un job con parámetros debo activarle esa opción e indicarle los nombres/claves de esos parámetros para que me los pida en el arranque del job.
+
+                    VIDEO 13 BASE DE DATOS RDS MYSQL
+
+Fijate en la estructura de un pipeline:
+pipeline {
+    agent any
+    parameters {
+        string defaultValue:'',description:'nombre del usuario a crear',name:'USUARIO',trim:true
+        string defaultValue:'',description:'contraseña',name:'PASSWORD',trim:true
+        choice choices:['Lectura', 'Admin','Desarrollador'],description:'TIPOUSUARIO'
+        extendedChoice description: '', multiSelectDelimiter: '',name:'DATABASE'...
+    }
+    environment { 
+        ADMIN = 'SHOW DATABASES,INSERT,SHOW,CREATE'
+        USER='SHOW DATABASES,SHOW'
+     }
+    stages { 
+        stage {'Creando usuario'}{
+            steps{ ... }
+        }
+     }
+}
+* Puedo observar que en la misma linea se separan los argumentos por comas y los saltos de linea influyen,el retorno de carro es como un punto y coma.
+Fijate como en la zona environment puedo crear variable de entorno(en este caso son permisos sobre un MySQL) y nombres de roles para esos permisos.
+Despues viene la zona de stages compuesta por varias stage a las que puedo dar el nombre que quiera.
+En cada stage pueden ir varios steps.
+Recuerda que es posible que Jenkins falle la primera vez con la opcion build y para la segunda ya si  muestre la opcion extra build with parameters.
+Fijate que necesitabamos el plugin extendedChoice para este Jenkinsfile.
+
+                VIDEO 14 COMO USAR CREDENCIALES 'SECRET TEXT'
+
+Podemos ocultar cualquier información sensible,como por ejemplo una cadena de conexión.Para ello hay que ir a Credentials/Global Credentials/Add y eligo el tipo secret text.Lo que haré será crear un par clave,valor hacia esa data sensible.
+POr ejemplo,le doy como ID mongouri a la cadena de conexión.Desde este momento en cualquier pipeline ya no aparecerá la cadena de conexión,sino la palabra mongouri(esta opción es como crear una env simplemente).
+
+                    VIDEO 15 AGREGAR UN NODO SLAVE
+
+https://www.youtube.com/watch?v=LqqE81UUfJ0
+Tras crear un VPS tengo que instalar java(parece que con java8 valdria),git y docker:
 sudo apt install openjdk-11-jre-headless
 sudo apt install  docker-compose docker.io
 sudo usermod -aG docker <user> <- añadirle al grupo
@@ -373,3 +423,5 @@ pipeline {
         }
     }
 }
+
+* Fijate que para ejecutar este pipeline necesitaré activarle los parámetros y el plugin extendedChoice aparte de instalar un mysql en el slave.
